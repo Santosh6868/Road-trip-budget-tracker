@@ -1,35 +1,3 @@
-Looking at your screenshots, your remote GitHub repository was initialized on the web while your local Git history diverged. The `rejected` error happens because GitHub contains initial commits (or direct web commits) that your local terminal doesn't have yet.
-
-Here is how to force-sync your local project to GitHub so your website updates instantly.
-
----
-
-### Step 1: Push Your Local Code to GitHub
-
-Run these commands in your VS Code terminal (`E:\Projects\Budget`):
-
-```bash
-git add .
-git commit -m "Updated glass styling and script"
-git push -u origin main --force
-
-```
-
-*(Using `--force` overwrites the remote repository setup screen and uploads your local code directly).*
-
----
-
-### Step 2: Ensure Your Background Image Exists
-
-Make sure your image file in your folder is saved as **`Roadtrip.jpg`** (matching the exact capital **`R`** as specified in your `style.css`).
-
----
-
-### Step 3: Updated Full `app.js`
-
-Here is the complete code for `app.js` with individual breakdown displays and glass UI state intact:
-
-```javascript
 // Constants & Data
 const PEOPLE = [
   { id: "sai", name: "Sai", bg: "bg-sai", color: "#10b981" },
@@ -79,59 +47,49 @@ const closeModalBtn = document.getElementById("close-modal-btn");
 const membersList = document.getElementById("members-list");
 
 // Initialize Lucide Icons
-if (typeof lucide !== "undefined") {
-  lucide.createIcons();
-}
+lucide.createIcons();
 
 // Members Modal Logic
-if (peopleBadgeBtn) {
-  peopleBadgeBtn.addEventListener("click", () => {
-    membersList.innerHTML = "";
-    PEOPLE.forEach(p => {
-      const row = document.createElement("div");
-      row.className = "item-row";
-      row.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 10px;">
-          <div class="person-avatar ${p.bg}">${p.name.charAt(0)}</div>
-          <span style="font-weight: 600;">${p.name}</span>
-        </div>
-        <span class="badge" style="background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8);">Trip Member</span>
-      `;
-      membersList.appendChild(row);
-    });
-    membersModal.classList.remove("hidden");
+peopleBadgeBtn.addEventListener("click", () => {
+  membersList.innerHTML = "";
+  PEOPLE.forEach(p => {
+    const row = document.createElement("div");
+    row.className = "item-row";
+    row.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div class="person-avatar ${p.bg}">${p.name.charAt(0)}</div>
+        <span style="font-weight: 600;">${p.name}</span>
+      </div>
+      <span class="badge" style="background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8);">Trip Member</span>
+    `;
+    membersList.appendChild(row);
   });
-}
+  membersModal.classList.remove("hidden");
+});
 
-if (closeModalBtn) {
-  closeModalBtn.addEventListener("click", () => {
+closeModalBtn.addEventListener("click", () => {
+  membersModal.classList.add("hidden");
+});
+
+membersModal.addEventListener("click", (e) => {
+  if (e.target === membersModal) {
     membersModal.classList.add("hidden");
-  });
-}
-
-if (membersModal) {
-  membersModal.addEventListener("click", (e) => {
-    if (e.target === membersModal) {
-      membersModal.classList.add("hidden");
-    }
-  });
-}
+  }
+});
 
 // Subcategory Dropdown Logic
-if (categorySelect) {
-  categorySelect.addEventListener("change", (e) => {
-    const cat = e.target.value;
-    subcategorySelect.innerHTML = '<option value="">Select subcategory</option>';
-    if (cat && SUBCATEGORIES[cat]) {
-      SUBCATEGORIES[cat].forEach((sub) => {
-        const opt = document.createElement("option");
-        opt.value = sub;
-        opt.textContent = sub;
-        subcategorySelect.appendChild(opt);
-      });
-    }
-  });
-}
+categorySelect.addEventListener("change", (e) => {
+  const cat = e.target.value;
+  subcategorySelect.innerHTML = '<option value="">Select subcategory</option>';
+  if (cat && SUBCATEGORIES[cat]) {
+    SUBCATEGORIES[cat].forEach((sub) => {
+      const opt = document.createElement("option");
+      opt.value = sub;
+      opt.textContent = sub;
+      subcategorySelect.appendChild(opt);
+    });
+  }
+});
 
 // Split Selection Logic
 splitChips.forEach((chip) => {
@@ -159,35 +117,33 @@ paymentButtons.forEach((btn) => {
 });
 
 // Submit Form Logic
-if (expenseForm) {
-  expenseForm.addEventListener("submit", (e) => {
-    e.preventDefault();
+expenseForm.addEventListener("submit", (e) => {
+  e.preventDefault();
 
-    const newExpense = {
-      id: Date.now().toString(),
-      category: categorySelect.value,
-      subcategory: subcategorySelect.value,
-      amount: parseFloat(document.getElementById("amount").value),
-      paidBy: document.getElementById("paidBy").value,
-      splitAmong: [...selectedSplit],
-      paymentMode: selectedPaymentMode,
-      location: document.getElementById("location") ? document.getElementById("location").value : "",
-      notes: document.getElementById("notes") ? document.getElementById("notes").value : "",
-      date: new Date().toISOString()
-    };
+  const newExpense = {
+    id: Date.now().toString(),
+    category: categorySelect.value,
+    subcategory: subcategorySelect.value,
+    amount: parseFloat(document.getElementById("amount").value),
+    paidBy: document.getElementById("paidBy").value,
+    splitAmong: [...selectedSplit],
+    paymentMode: selectedPaymentMode,
+    location: document.getElementById("location").value,
+    notes: document.getElementById("notes").value,
+    date: new Date().toISOString()
+  };
 
-    expenses.unshift(newExpense);
-    saveAndRender();
+  expenses.unshift(newExpense);
+  saveAndRender();
 
-    // Reset form inputs
-    expenseForm.reset();
-    if (subcategorySelect) subcategorySelect.innerHTML = '<option value="">Select subcategory</option>';
-    selectedSplit = ["sai", "santosh", "siva", "srinu"];
-    splitChips.forEach((chip) => chip.classList.add("active"));
-    selectedPaymentMode = "UPI";
-    paymentButtons.forEach((b, i) => i === 0 ? b.classList.add("active") : b.classList.remove("active"));
-  });
-}
+  // Reset form inputs
+  expenseForm.reset();
+  subcategorySelect.innerHTML = '<option value="">Select subcategory</option>';
+  selectedSplit = ["sai", "santosh", "siva", "srinu"];
+  splitChips.forEach((chip) => chip.classList.add("active"));
+  selectedPaymentMode = "UPI";
+  paymentButtons.forEach((b, i) => i === 0 ? b.classList.add("active") : b.classList.remove("active"));
+});
 
 // Delete Expense Logic
 function deleteExpense(id) {
@@ -201,133 +157,110 @@ function render() {
   const perPersonShare = totalSpent / 4;
 
   // 1. Total Display
-  const totalDisplay = document.getElementById("total-spent-amount") || document.getElementById("total-amount");
-  if (totalDisplay) totalDisplay.textContent = `₹${totalSpent.toLocaleString("en-IN")}`;
-  
-  const countDisplay = document.getElementById("total-expenses-count");
-  if (countDisplay) countDisplay.textContent = `${expenses.length} expenses recorded`;
-  
-  const shareDisplay = document.getElementById("split-per-person") || document.getElementById("per-person-share");
-  if (shareDisplay) shareDisplay.textContent = `₹${perPersonShare.toLocaleString("en-IN")}`;
+  document.getElementById("total-spent-amount").textContent = `₹${totalSpent.toLocaleString("en-IN")}`;
+  document.getElementById("total-expenses-count").textContent = `${expenses.length} expenses recorded`;
+  document.getElementById("split-per-person").textContent = `₹${perPersonShare.toLocaleString("en-IN")}`;
 
   // 2. Calculate Person Spending
   const personPaidTotals = { sai: 0, santosh: 0, siva: 0, srinu: 0 };
   const personSplitShare = { sai: 0, santosh: 0, siva: 0, srinu: 0 };
 
   expenses.forEach((e) => {
-    const payerKey = e.paidBy ? e.paidBy.toLowerCase() : "sai";
-    if (personPaidTotals[payerKey] !== undefined) {
-      personPaidTotals[payerKey] += e.amount;
+    if (personPaidTotals[e.paidBy] !== undefined) {
+      personPaidTotals[e.paidBy] += e.amount;
     }
-    const splitCount = (e.splitAmong && e.splitAmong.length) ? e.splitAmong.length : 1;
+    const splitCount = e.splitAmong.length || 1;
     const share = e.amount / splitCount;
-    if (e.splitAmong) {
-      e.splitAmong.forEach((p) => {
-        const key = p.toLowerCase();
-        if (personSplitShare[key] !== undefined) {
-          personSplitShare[key] += share;
-        }
-      });
-    }
+    e.splitAmong.forEach((p) => {
+      if (personSplitShare[p] !== undefined) {
+        personSplitShare[p] += share;
+      }
+    });
   });
 
   // 3. Render Total Spent Pie Chart
-  if (document.getElementById("totalSpentChart")) {
-    renderTotalSpentChart(personPaidTotals);
-  }
+  renderTotalSpentChart(personPaidTotals);
 
-  // 4. Render Balances
-  const personBalancesContainer = document.getElementById("person-balances") || document.getElementById("balances-list");
-  if (personBalancesContainer) {
-    personBalancesContainer.innerHTML = "";
-    PEOPLE.forEach((p) => {
-      const spent = personPaidTotals[p.id] || 0;
-      const diff = spent - perPersonShare;
-      const isPositive = diff > 0;
+  // 4. Render Equal Split Balances
+  const personBalancesContainer = document.getElementById("person-balances");
+  personBalancesContainer.innerHTML = "";
+  PEOPLE.forEach((p) => {
+    const spent = personSplitShare[p.id] || 0;
+    const diff = spent - perPersonShare;
+    const isPositive = diff > 0;
 
-      const row = document.createElement("div");
-      row.className = "item-row";
-      row.innerHTML = `
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <div class="person-avatar ${p.bg}">${p.name.charAt(0)}</div>
-          <span>${p.name}</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <strong>₹${spent.toLocaleString("en-IN")}</strong>
-          <span class="badge ${isPositive ? "badge-owed" : "badge-owes"}">
-            ${diff === 0 ? "Settled" : (isPositive ? "Gets Back" : "Owes") + " ₹" + Math.abs(diff).toLocaleString("en-IN")}
-          </span>
-        </div>
-      `;
-      personBalancesContainer.appendChild(row);
-    });
-  }
-
-  // 5. Render Expense History
-  const historyContainer = document.getElementById("expense-list") || document.getElementById("history-list");
-  if (historyContainer) {
-    const historyCount = document.getElementById("history-count");
-    if (historyCount) historyCount.textContent = `${expenses.length} entries`;
-    historyContainer.innerHTML = "";
-
-    if (expenses.length === 0) {
-      historyContainer.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5); padding: 16px;">No expenses yet</p>';
-    } else {
-      expenses.forEach((e) => {
-        const row = document.createElement("div");
-        row.className = "item-row";
-        row.innerHTML = `
-          <div>
-            <strong>${e.subcategory || e.category || "Expense"}</strong>
-            <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">
-              Paid by ${e.paidBy} ${e.paymentMode ? "• " + e.paymentMode : ""}
-            </div>
-          </div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <strong>₹${e.amount.toLocaleString("en-IN")}</strong>
-            <button class="btn-delete" onclick="deleteExpense('${e.id}')">✕</button>
-          </div>
-        `;
-        historyContainer.appendChild(row);
-      });
-    }
-  }
-
-  // 6. Render Category Breakdown
-  const catTotals = {};
-  expenses.forEach((e) => {
-    const cat = e.category || "Other";
-    catTotals[cat] = (catTotals[cat] || 0) + e.amount;
+    const row = document.createElement("div");
+    row.className = "item-row";
+    row.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div class="person-avatar ${p.bg}">${p.name.charAt(0)}</div>
+        <span>${p.name}</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <strong>₹${spent.toLocaleString("en-IN")}</strong>
+        <span class="badge ${isPositive ? "badge-owes" : "badge-owed"}">
+          ${diff === 0 ? "Settled" : (isPositive ? "Owes" : "Owed") + " ₹" + Math.abs(diff).toLocaleString("en-IN")}
+        </span>
+      </div>
+    `;
+    personBalancesContainer.appendChild(row);
   });
 
-  if (document.getElementById("categoryChart")) {
-    renderCategoryChart(catTotals);
-  }
+  // 5. Render Expense History
+  const historyContainer = document.getElementById("expense-list");
+  document.getElementById("history-count").textContent = `${expenses.length} entries`;
+  historyContainer.innerHTML = "";
 
-  const catContainer = document.getElementById("category-breakdown");
-  if (catContainer) {
-    catContainer.innerHTML = "";
-    Object.entries(catTotals).sort((a, b) => b[1] - a[1]).forEach(([cat, amt]) => {
-      const pct = totalSpent > 0 ? ((amt / totalSpent) * 100).toFixed(1) : 0;
+  if (expenses.length === 0) {
+    historyContainer.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.5); padding: 16px;">No expenses yet</p>';
+  } else {
+    expenses.forEach((e) => {
       const row = document.createElement("div");
       row.className = "item-row";
       row.innerHTML = `
-        <span>${cat}</span>
         <div>
-          <span style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-right: 8px;">${pct}%</span>
-          <strong>₹${amt.toLocaleString("en-IN")}</strong>
+          <strong>${e.subcategory || e.category}</strong>
+          <div style="font-size: 0.75rem; color: rgba(255,255,255,0.6);">
+            Paid by ${e.paidBy} • ${e.paymentMode}
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <strong>₹${e.amount.toLocaleString("en-IN")}</strong>
+          <button class="btn-delete" onclick="deleteExpense('${e.id}')">✕</button>
         </div>
       `;
-      catContainer.appendChild(row);
+      historyContainer.appendChild(row);
     });
   }
+
+  // 6. Render Category Breakdown & Pie Chart
+  const catTotals = {};
+  expenses.forEach((e) => {
+    catTotals[e.category] = (catTotals[e.category] || 0) + e.amount;
+  });
+
+  renderCategoryChart(catTotals);
+
+  const catContainer = document.getElementById("category-breakdown");
+  catContainer.innerHTML = "";
+  Object.entries(catTotals).sort((a, b) => b[1] - a[1]).forEach(([cat, amt]) => {
+    const pct = totalSpent > 0 ? ((amt / totalSpent) * 100).toFixed(1) : 0;
+    const row = document.createElement("div");
+    row.className = "item-row";
+    row.innerHTML = `
+      <span>${cat}</span>
+      <div>
+        <span style="font-size: 0.75rem; color: rgba(255,255,255,0.6); margin-right: 8px;">${pct}%</span>
+        <strong>₹${amt.toLocaleString("en-IN")}</strong>
+      </div>
+    `;
+    catContainer.appendChild(row);
+  });
 }
 
 // Chart.js - Total Spent Pie Chart
 function renderTotalSpentChart(paidData) {
-  const chartEl = document.getElementById("totalSpentChart");
-  if (!chartEl) return;
-  const ctx = chartEl.getContext("2d");
+  const ctx = document.getElementById("totalSpentChart").getContext("2d");
   const labels = PEOPLE.map(p => p.name);
   const data = PEOPLE.map(p => paidData[p.id] || 0);
   const colors = PEOPLE.map(p => p.color);
@@ -358,9 +291,7 @@ function renderTotalSpentChart(paidData) {
 
 // Chart.js - Category Pie Chart
 function renderCategoryChart(catData) {
-  const chartEl = document.getElementById("categoryChart");
-  if (!chartEl) return;
-  const ctx = chartEl.getContext("2d");
+  const ctx = document.getElementById("categoryChart").getContext("2d");
   const labels = Object.keys(catData);
   const data = Object.values(catData);
   const colors = labels.map(l => CATEGORY_COLORS[l] || "#94a3b8");
@@ -394,27 +325,24 @@ function saveAndRender() {
   render();
 }
 
-if (exportBtn) {
-  exportBtn.addEventListener("click", () => {
-    if (expenses.length === 0) {
-      alert("No expenses to export!");
-      return;
-    }
-    let csv = "Category,Subcategory,Amount (INR),Paid By,Payment Mode,Location,Notes\n";
-    expenses.forEach((e) => {
-      csv += `"${e.category}","${e.subcategory || ""}","${e.amount}","${e.paidBy}","${e.paymentMode}","${e.location || ""}","${e.notes || ""}"\n`;
-    });
-
-    const blob = new Blob([csv], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.setAttribute("href", url);
-    a.setAttribute("download", `road-trip-expenses-${new Date().toISOString().split("T")[0]}.csv`);
-    a.click();
+// Export to CSV Logic
+exportBtn.addEventListener("click", () => {
+  if (expenses.length === 0) {
+    alert("No expenses to export!");
+    return;
+  }
+  let csv = "Category,Subcategory,Amount (INR),Paid By,Payment Mode,Location,Notes\n";
+  expenses.forEach((e) => {
+    csv += `"${e.category}","${e.subcategory || ""}","${e.amount}","${e.paidBy}","${e.paymentMode}","${e.location || ""}","${e.notes || ""}"\n`;
   });
-}
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.setAttribute("href", url);
+  a.setAttribute("download", `road-trip-expenses-${new Date().toISOString().split("T")[0]}.csv`);
+  a.click();
+});
 
 // Initial Render
 render();
-
-```

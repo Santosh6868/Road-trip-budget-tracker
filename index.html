@@ -1,101 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roadtrip Expense Tracker</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Road Trip Expense Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js CDN for Pie Charts -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-
+  <!-- Header -->
   <header>
     <div class="header-content">
       <div class="header-title">
-        <svg class="header-car-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17a2 2 0 100 4 2 2 0 000-4ptm0 0H6a2 2 0 01-2-2V9a2 2 0 012-2h12a2 2 0 012 2v6a2 2 0 01-2 2h-2m-4 0a2 2 0 100 4 2 2 0 000-4m-6 0h6"></path>
+        <svg class="header-car-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+          <circle cx="7" cy="17" r="2"/>
+          <path d="M9 17h6"/>
+          <circle cx="17" cy="17" r="2"/>
         </svg>
-        <h1>Roadtrip Budget</h1>
+        <h1>Road Trip</h1>
       </div>
       <div class="header-actions">
-        <div class="people-badge" id="btn-people-modal">
-          <span>👥</span> <span id="people-count-label">4 People</span>
+        <button id="export-btn" class="btn btn-outline-emerald">
+          <i data-lucide="file-spreadsheet"></i>
+          <span>Export</span>
+        </button>
+        <div class="people-badge" id="people-badge-btn" role="button" tabindex="0">
+          <i data-lucide="users"></i>
+          <span>4</span>
         </div>
       </div>
     </div>
   </header>
 
+  <!-- Members Modal -->
+  <div id="members-modal" class="modal-overlay hidden">
+    <div class="modal-content card bg-glass">
+      <div class="modal-header">
+        <h2><i data-lucide="users"></i> Trip Members</h2>
+        <button id="close-modal-btn" class="btn-close">✕</button>
+      </div>
+      <div id="members-list" class="space-y" style="margin-top: 12px;">
+        <!-- Generated dynamically by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Container -->
   <main>
-    <!-- Total Summary Card -->
+    <!-- 1. Total Spent Card (With Pie Chart) -->
     <section class="card bg-glass">
-      <h2>Overall Spending</h2>
+      <h2><i data-lucide="pie-chart"></i> Total Spent</h2>
       <div class="total-display">
-        <span id="total-amount">₹0.00</span>
-        <p>Total Group Expenses</p>
+        <span id="total-spent-amount">₹0</span>
+        <p id="total-expenses-count">0 expenses recorded</p>
       </div>
       <div class="chart-container">
-        <canvas id="categoryChart"></canvas>
+        <canvas id="totalSpentChart"></canvas>
       </div>
     </section>
 
-    <!-- Expense Entry Form -->
+    <!-- 2. Add Expense Card -->
     <section class="card bg-glass">
-      <h2>Add New Expense</h2>
+      <h2><i data-lucide="plus-circle"></i> Add Expense</h2>
       <form id="expense-form">
-        <div class="form-group">
-          <label>Payer</label>
-          <div class="chips-grid" id="payer-chips">
-            <button type="button" class="chip active" data-value="Sai">Sai</button>
-            <button type="button" class="chip" data-value="Santosh">Santosh</button>
-            <button type="button" class="chip" data-value="Siva">Siva</button>
-            <button type="button" class="chip" data-value="Srinu">Srinu</button>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="amount">Amount (₹)</label>
-          <input type="number" id="amount" placeholder="0.00" step="0.01" required>
-        </div>
-
         <div class="form-group">
           <label for="category">Category</label>
           <select id="category" required>
-            <option value="Fuel">Fuel</option>
-            <option value="Food">Food</option>
-            <option value="Stay">Stay</option>
-            <option value="Toll">Toll</option>
-            <option value="Other">Other</option>
+            <option value="">Select category</option>
+            <option value="Accommodation">🏨 Accommodation</option>
+            <option value="Food">🍔 Food</option>
+            <option value="Fuel">⛽ Fuel</option>
+            <option value="Miscellaneous">📦 Miscellaneous</option>
+            <option value="Shopping">🛍️ Shopping</option>
+            <option value="Sightseeing">🎟️ Sightseeing</option>
+            <option value="Smoke">🚬 Smoke</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="description">Description (Optional)</label>
-          <input type="text" id="description" placeholder="e.g., Petrol at HP bunk">
+          <label for="subcategory">Subcategory</label>
+          <select id="subcategory">
+            <option value="">Select subcategory</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="amount">Amount (₹)</label>
+          <input type="number" id="amount" placeholder="Enter amount" required min="1" step="any" />
+        </div>
+
+        <div class="form-group">
+          <label for="paidBy">Paid By</label>
+          <select id="paidBy" required>
+            <option value="">Who paid?</option>
+            <option value="sai">Sai</option>
+            <option value="santosh">Santosh</option>
+            <option value="siva">Siva</option>
+            <option value="srinu">Srinu</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Split Among</label>
+          <div id="split-chips" class="chips-grid">
+            <button type="button" class="chip active" data-id="sai">Sai</button>
+            <button type="button" class="chip active" data-id="santosh">Santosh</button>
+            <button type="button" class="chip active" data-id="siva">Siva</button>
+            <button type="button" class="chip active" data-id="srinu">Srinu</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Payment Mode</label>
+          <div id="payment-mode-buttons" class="grid-3">
+            <button type="button" class="btn-toggle active" data-mode="UPI">UPI</button>
+            <button type="button" class="btn-toggle" data-mode="Cash">Cash</button>
+            <button type="button" class="btn-toggle" data-mode="FASTag">FASTag</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input type="text" id="location" placeholder="Enter location (optional)" />
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Notes</label>
+          <textarea id="notes" rows="2" placeholder="Add any notes (optional)"></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary w-full">Add Expense</button>
       </form>
     </section>
 
-    <!-- Balance / Settlement Summary -->
+    <!-- 3. Equal Split Status Card -->
     <section class="card bg-glass">
-      <div class="card-header-flex">
-        <h2>Balances & Settlement</h2>
-      </div>
+      <h2><i data-lucide="scale"></i> Equal Split Status</h2>
       <div class="split-target">
-        <span>Target Per Person Share</span>
-        <strong id="per-person-share">₹0.00</strong>
+        <span>Each person should pay:</span>
+        <strong id="split-per-person">₹0</strong>
       </div>
-      <div class="space-y" id="balances-list">
-        <!-- Rendered dynamically -->
+      <div id="person-balances" class="space-y">
+        <!-- Dynamic content generated by JS -->
       </div>
     </section>
 
-    <!-- Expense History Log -->
+    <!-- 4. Expense History Card -->
     <section class="card bg-glass">
-      <h2>Expense History</h2>
-      <div class="scrollable-history space-y" id="history-list">
-        <!-- Rendered dynamically -->
+      <div class="card-header-flex">
+        <h2><i data-lucide="history"></i> Expense History</h2>
+        <span id="history-count" class="badge">0 entries</span>
+      </div>
+      <div id="expense-list" class="space-y scrollable-history">
+        <!-- Dynamic list content generated by JS -->
+      </div>
+    </section>
+
+    <!-- 5. Category Breakdown Card -->
+    <section class="card bg-glass">
+      <h2><i data-lucide="bar-chart-3"></i> Category Breakdown</h2>
+      <div class="chart-container">
+        <canvas id="categoryChart"></canvas>
+      </div>
+      <div id="category-breakdown" class="space-y" style="margin-top: 16px;">
+        <!-- Dynamic content generated by JS -->
       </div>
     </section>
   </main>
