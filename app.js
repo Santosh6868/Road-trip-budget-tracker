@@ -41,8 +41,52 @@ const splitChips = document.querySelectorAll("#split-chips .chip");
 const paymentButtons = document.querySelectorAll("#payment-mode-buttons .btn-toggle");
 const exportBtn = document.getElementById("export-btn");
 
+// Modal DOM Elements
+const peopleBadgeBtn = document.getElementById("people-badge-btn");
+const membersModal = document.getElementById("members-modal");
+const closeModalBtn = document.getElementById("close-modal-btn");
+const membersList = document.getElementById("members-list");
+
 // Initialize Lucide Icons
 lucide.createIcons();
+
+// Modal Logic
+if (peopleBadgeBtn) {
+  peopleBadgeBtn.addEventListener("click", () => {
+    renderMembersModal();
+    membersModal.classList.remove("hidden");
+  });
+}
+
+if (closeModalBtn) {
+  closeModalBtn.addEventListener("click", () => {
+    membersModal.classList.add("hidden");
+  });
+}
+
+if (membersModal) {
+  membersModal.addEventListener("click", (e) => {
+    if (e.target === membersModal) {
+      membersModal.classList.add("hidden");
+    }
+  });
+}
+
+function renderMembersModal() {
+  membersList.innerHTML = "";
+  PEOPLE.forEach((p) => {
+    const row = document.createElement("div");
+    row.className = "item-row";
+    row.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div class="person-avatar ${p.bg}">${p.name.charAt(0)}</div>
+        <span style="font-weight: 600;">${p.name}</span>
+      </div>
+      <span class="badge" style="background: rgba(255,255,255,0.15); color: #fff;">Trip Member</span>
+    `;
+    membersList.appendChild(row);
+  });
+}
 
 // Subcategory Dropdown Logic
 categorySelect.addEventListener("change", (e) => {
@@ -223,6 +267,41 @@ function render() {
     `;
     catContainer.appendChild(row);
   });
+
+  // 7. Render Individual Total Spent & Top Spender
+  const individualListContainer = document.getElementById("individual-spending-list");
+  const topSpenderDisplay = document.getElementById("top-spender-display");
+  if (individualListContainer) {
+    individualListContainer.innerHTML = "";
+    let highestAmount = -1;
+    let topSpenderText = "No expenses yet";
+
+    PEOPLE.forEach((p) => {
+      const spent = personPaidTotals[p.id] || 0;
+
+      if (spent > highestAmount && spent > 0) {
+        highestAmount = spent;
+        topSpenderText = `${p.name} (₹${spent.toLocaleString("en-IN")})`;
+      } else if (spent === highestAmount && spent > 0) {
+        topSpenderText += `, ${p.name}`;
+      }
+
+      const row = document.createElement("div");
+      row.className = "item-row";
+      row.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="person-avatar ${p.bg}">${p.name.charAt(0)}</div>
+          <span>${p.name}</span>
+        </div>
+        <strong>₹${spent.toLocaleString("en-IN")}</strong>
+      `;
+      individualListContainer.appendChild(row);
+    });
+
+    if (topSpenderDisplay) {
+      topSpenderDisplay.textContent = topSpenderText;
+    }
+  }
 }
 
 // Chart.js - Total Spent Pie Chart
