@@ -20,8 +20,6 @@ const totalAmountDisplay = document.getElementById('total-amount');
 const perPersonShareDisplay = document.getElementById('per-person-share');
 const balancesList = document.getElementById('balances-list');
 const historyList = document.getElementById('history-list');
-const individualBreakdownList = document.getElementById('individual-breakdown-list');
-const topSpenderNameDisplay = document.getElementById('top-spender-name');
 
 // Chip Selector Logic
 payerChips.addEventListener('click', (e) => {
@@ -72,11 +70,11 @@ function renderAll() {
   const totalSpent = expenses.reduce((sum, item) => sum + item.amount, 0);
   const sharePerPerson = totalSpent / members.length;
 
-  // 1. Update Total Display
+  // Update Total Display
   totalAmountDisplay.textContent = `₹${totalSpent.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   perPersonShareDisplay.textContent = `₹${sharePerPerson.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-  // 2. Calculate Total Spent per Person
+  // Calculate Total Spent per Person for Balances
   const totalsByPerson = { Sai: 0, Santosh: 0, Siva: 0, Srinu: 0 };
   expenses.forEach(item => {
     if (totalsByPerson[item.payer] !== undefined) {
@@ -84,36 +82,7 @@ function renderAll() {
     }
   });
 
-  // 3. Render Individual Breakdown List & Find Top Spender
-  individualBreakdownList.innerHTML = '';
-  let highestAmount = -1;
-  let topSpender = 'No expenses yet';
-
-  members.forEach(member => {
-    const spent = totalsByPerson[member];
-
-    if (spent > highestAmount && spent > 0) {
-      highestAmount = spent;
-      topSpender = `${member} (₹${spent.toLocaleString('en-IN', { minimumFractionDigits: 2 })})`;
-    } else if (spent === highestAmount && spent > 0) {
-      topSpender += `, ${member}`;
-    }
-
-    const row = document.createElement('div');
-    row.className = 'item-row';
-    row.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <div class="person-avatar ${avatarClasses[member]}">${member[0]}</div>
-        <span>${member}</span>
-      </div>
-      <strong>₹${spent.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong>
-    `;
-    individualBreakdownList.appendChild(row);
-  });
-
-  topSpenderNameDisplay.textContent = topSpender;
-
-  // 4. Render Settlement Balances
+  // Render Settlement Balances
   balancesList.innerHTML = '';
   members.forEach(member => {
     const spent = totalsByPerson[member];
@@ -140,7 +109,7 @@ function renderAll() {
     balancesList.appendChild(row);
   });
 
-  // 5. Render History Log
+  // Render History Log
   historyList.innerHTML = '';
   if (expenses.length === 0) {
     historyList.innerHTML = `<p style="text-align: center; color: var(--text-muted); font-size: 0.875rem;">No expenses recorded yet.</p>`;
@@ -165,7 +134,7 @@ function renderAll() {
     });
   }
 
-  // 6. Update Chart
+  // Update Chart
   updateChart();
 }
 
