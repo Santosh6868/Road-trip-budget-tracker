@@ -41,41 +41,8 @@ const splitChips = document.querySelectorAll("#split-chips .chip");
 const paymentButtons = document.querySelectorAll("#payment-mode-buttons .btn-toggle");
 const exportBtn = document.getElementById("export-btn");
 
-const peopleBadgeBtn = document.getElementById("people-badge-btn");
-const membersModal = document.getElementById("members-modal");
-const closeModalBtn = document.getElementById("close-modal-btn");
-const membersList = document.getElementById("members-list");
-
 // Initialize Lucide Icons
 lucide.createIcons();
-
-// Members Modal Logic
-peopleBadgeBtn.addEventListener("click", () => {
-  membersList.innerHTML = "";
-  PEOPLE.forEach(p => {
-    const row = document.createElement("div");
-    row.className = "item-row";
-    row.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 10px;">
-        <div class="person-avatar ${p.bg}">${p.name.charAt(0)}</div>
-        <span style="font-weight: 600;">${p.name}</span>
-      </div>
-      <span class="badge" style="background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8);">Trip Member</span>
-    `;
-    membersList.appendChild(row);
-  });
-  membersModal.classList.remove("hidden");
-});
-
-closeModalBtn.addEventListener("click", () => {
-  membersModal.classList.add("hidden");
-});
-
-membersModal.addEventListener("click", (e) => {
-  if (e.target === membersModal) {
-    membersModal.classList.add("hidden");
-  }
-});
 
 // Subcategory Dropdown Logic
 categorySelect.addEventListener("change", (e) => {
@@ -178,7 +145,7 @@ function render() {
     });
   });
 
-  // 3. Render Total Spent Pie Chart
+  // 3. Render Total Spent Pie Chart (By Payer)
   renderTotalSpentChart(personPaidTotals);
 
   // 4. Render Equal Split Balances

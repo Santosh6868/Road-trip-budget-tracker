@@ -29,26 +29,13 @@
           <i data-lucide="file-spreadsheet"></i>
           <span>Export</span>
         </button>
-        <div class="people-badge" id="people-badge-btn" role="button" tabindex="0">
+        <div class="people-badge">
           <i data-lucide="users"></i>
           <span>4</span>
         </div>
       </div>
     </div>
   </header>
-
-  <!-- Members Modal -->
-  <div id="members-modal" class="modal-overlay hidden">
-    <div class="modal-content card bg-glass">
-      <div class="modal-header">
-        <h2><i data-lucide="users"></i> Trip Members</h2>
-        <button id="close-modal-btn" class="btn-close">✕</button>
-      </div>
-      <div id="members-list" class="space-y" style="margin-top: 12px;">
-        <!-- Generated dynamically by JS -->
-      </div>
-    </div>
-  </div>
 
   <!-- Main Container -->
   <main>
@@ -64,7 +51,7 @@
       </div>
     </section>
 
-    <!-- 2. Add Expense Card -->
+    <!-- 2. Add Expense Card (Placed right after Total Spent) -->
     <section class="card bg-glass">
       <h2><i data-lucide="plus-circle"></i> Add Expense</h2>
       <form id="expense-form">
@@ -150,7 +137,7 @@
       </div>
     </section>
 
-    <!-- 4. Expense History Card -->
+    <!-- 4. Expense History Card (Scrollable after 4 items) -->
     <section class="card bg-glass">
       <div class="card-header-flex">
         <h2><i data-lucide="history"></i> Expense History</h2>
@@ -161,7 +148,7 @@
       </div>
     </section>
 
-    <!-- 5. Category Breakdown Card -->
+    <!-- 5. Category Breakdown Card (With Pie Chart) -->
     <section class="card bg-glass">
       <h2><i data-lucide="bar-chart-3"></i> Category Breakdown</h2>
       <div class="chart-container">
